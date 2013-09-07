@@ -1,0 +1,14 @@
+  file {
+    discover_interval       => 15
+    sincedb_write_interval  => 15
+    sincedb_path            => '/var/lib/logstash/<%= name %>.sincedb'
+    type                    => '<%= plugin_type %>'
+<% if has_variable?('plugin_tags') then -%>
+    tags => [<%= plugin_tags.flatten.join(",")%>]
+<% end -%>
+<% if has_variable?('plugin_options') then -%>
+<% plugin_options.each do |parameter| -%>
+    <%= parameter %>
+<% end -%>
+<% end -%>
+  }

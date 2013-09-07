@@ -1,0 +1,10 @@
+  http {
+<% if defined?('plugin_tags') then -%>
+    tags => [<%= plugin_tags.flatten.join(",")%>]
+<% end -%>
+<% if defined?('plugin_options') then -%>
+<% plugin_options.each do |parameter| -%>
+    <%= parameter %>
+<% end -%>
+<% end -%>
+  }

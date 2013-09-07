@@ -1,0 +1,46 @@
+  mutate {
+    type            => '<%= plugin_type %>'
+    add_field       => [ 'original', "%{@message}" ]
+    add_tag         => 'mutated_original'
+  }
+  grok {
+    type            => '<%= plugin_type %>'
+    match           => [ "@message", "^\[%{DATA:timestamp}\] \[%{DATA:level}\] \[%{DATA:pid}\] %{GREEDYDATA:event}" ]
+    break_on_match  => false
+    add_tag         => 'grokked'
+  }
+  json {
+    type            => '<%= plugin_type %>'
+    event           => '@fields'
+    add_tag         => 'decoded'
+  }
+  mutate {
+    type            => '<%= plugin_type %>'
+    replace         => [ "@message", '%{event}' ]
+    add_tag         => 'mutated'
+  }
+  urlhandler {
+    type            => '<%= plugin_type %>'
+    tags            => ['mutated', 'grokked']
+    exclude_tags    => ['_jsonparsed', 'decoded']
+    add_tag         => 'exploded'
+  }
+  urldecode {
+    type            => '<%= plugin_type %>'
+    add_tag         => 'decoded'
+    exclude_tags    => ['_jsonparsed', 'decoded']
+    all_fields      => true
+  }
+  mutate {
+    type            => '<%= plugin_type %>'
+    remove          => [ 'event', 'original' ]
+    add_tag         => 'pruned'
+    remove_tag      => [ 'mutated_original' ]
+  }
+  php {
+    backtrace       => backtrace
+    tags            => [ 'decoded' ]
+    add_tag         => [ 'backtrace_decoded' ]
+    exclude_tags    => ['_jsonparsed', 'decoded']
+    type            => '<%= plugin_type %>'
+  }

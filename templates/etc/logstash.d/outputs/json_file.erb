@@ -1,0 +1,6 @@
+  file {
+    flush_interval  => 2
+    exclude_tags    => [ '_phpparsefailure', '_grokparsefailure']
+    gzip            => false
+    path            => '/data/1/logstash/event.json.log'
+  }

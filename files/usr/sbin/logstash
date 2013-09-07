@@ -1,0 +1,4 @@
+ #!/bin/bash
+cd /var/lib/logstash
+FULLNAME="$0"
+exec -a "${FULLNAME}" java -Xmx256M -Xms64M -cp /usr/share/logstash logstash.runner agent "$@" -f /etc/logstash/logstash.conf --pluginpath /usr/share/logstash/logstash --grok-patterns-path /usr/share/logstash/patterns

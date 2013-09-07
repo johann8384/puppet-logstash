@@ -1,0 +1,72 @@
+  grok {
+    type            => 'raw-file-search-app'
+    match           => [ "@message", "^\[%{DATA:timestamp}\] \[%{DATA:level}\] \[%{DATA:pid}\] %{GREEDYDATA:event}" ]
+    break_on_match  => false
+    add_tag         => 'grokked'
+  }
+  mutate {
+    type            => 'raw-file-search-app'
+    replace         => [ "@message", '%{event}' ]
+    add_tag         => 'mutated'
+  }
+  urlhandler {
+    type            => 'raw-file-search-app'
+    tags            => ['mutated', 'grokked']
+    add_tag         => 'exploded'
+  }
+  urldecode {
+    type            => 'raw-file-search-app'
+    add_tag         => 'decoded'
+    all_fields      => true
+  }
+  mutate {
+    type            => 'raw-file-search-app'
+    remove          => [ 'event', 'original' ]
+    add_tag         => 'pruned'
+    remove_tag      => [ 'mutated_original' ]
+  }
+  php {
+    backtrace       => backtrace
+    tags            => [ 'decoded' ]
+    add_tag         => [ 'backtrace_decoded' ]
+    type            => 'raw-file-search-app'
+  }
+
+  grep {
+    type  => 'raw-file-search-app'
+    match => [ "user_id", "186263827"]
+    add_tag => [ 'raw-file-search-matched' ]
+    exclude_tags => ['raw-file-search-matched']
+    drop => false
+  }
+  grep {
+    type  => 'raw-file-search-app'
+    match => [ "ip_addr", "^65.170.58.[0-9]+"]
+    add_tag => [ 'raw-file-search-matched' ]
+    exclude_tags => ['raw-file-search-matched']
+    drop => false
+  }
+  grep {
+    type  => 'raw-file-search-app'
+    exclude_tags => ['raw-file-search-matched']
+    add_tag => [ 'raw-file-search-missed' ]
+  }
+  grep {
+    type  => 'raw-file-search'
+    match => [ "@message", "^65.170.58.[0-9]+"]
+    add_tag => [ 'raw-file-search-matched' ]
+    exclude_tags => ['raw-file-search-matched']
+    drop => false
+  }
+  grep {
+    type  => 'raw-file-search'
+    match => [ "@message", "user_id=186263827"]
+    add_tag => [ 'raw-file-search-matched' ]
+    exclude_tags => ['raw-file-search-matched']
+    drop => false
+  }
+  grep {
+    type  => 'raw-file-search'
+    exclude_tags => ['raw-file-search-matched']
+    add_tag => [ 'raw-file-search-missed' ]
+  }

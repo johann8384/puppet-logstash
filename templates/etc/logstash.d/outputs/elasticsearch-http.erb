@@ -1,0 +1,6 @@
+  elasticsearch_http {
+    index => "logstash-%{+YYYY.MM.dd}"
+<% plugin_options.each do |parameter| -%>
+    <%= parameter %>
+<% end -%>
+  }

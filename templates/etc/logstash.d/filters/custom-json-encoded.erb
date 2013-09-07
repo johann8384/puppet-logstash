@@ -1,0 +1,18 @@
+  grok {
+    type            => '<%= plugin_type %>'
+    match           => [ "@message", "^\[%{DATA:timestamp}\] \[%{DATA:level}\] \[%{DATA:pid}\] %{GREEDYDATA:event}" ]
+    break_on_match  => false
+    add_tag         => 'grokked'
+  }
+
+  mutate {
+    type            => '<%= plugin_type %>'
+    replace         => [ "@message", '%{event}' ]
+    add_tag         => 'mutated'
+  }
+
+  json {
+    type            => '<%= plugin_type %>'
+    event         => '@fields'
+    add_tag         => 'decoded'
+  }

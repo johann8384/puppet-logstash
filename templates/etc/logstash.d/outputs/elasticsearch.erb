@@ -1,0 +1,7 @@
+  elasticsearch {
+    exclude_tags    => [ '_phpparsefailure', '_grokparsefailure' ]
+    index => "logstash-%{+YYYY.MM.dd}"
+<% plugin_options.each do |parameter| -%>
+    <%= parameter %>
+<% end -%>
+  }

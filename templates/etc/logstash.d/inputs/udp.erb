@@ -1,0 +1,11 @@
+  udp {
+    type => '<%= plugin_type %>'
+    <% if has_variable?('plugin_tags') then -%>
+      tags => [<%= plugin_tags.flatten.join(",")%>]
+    <% end -%>
+    <% if has_variable?('plugin_options') then -%>
+      <% plugin_options.each do |parameter| -%>
+        <%= parameter %><%= "\n" %>
+      <% end -%>
+    <% end -%>
+  }

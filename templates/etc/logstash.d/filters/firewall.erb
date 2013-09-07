@@ -1,0 +1,10 @@
+  grok {
+    type => '<%= plugin_type %>'
+    pattern => [ "<%%{POSINT:syslog_pri}>%FWSM-%{POSINT:message_level}-%{POSINT:message_number}:%{GREEDYDATA:<%= plugin_type %>_message}" ]
+    patterns_dir => [ "/etc/logstash/patterns" ]
+  }
+  mutate {
+    type => '<%= plugin_type %>'
+    exclude_tags => '_grokparsefailure'
+    replace => ['@message', "%{<%= plugin_type %>_message}" ]
+  }
